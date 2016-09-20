@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements.  See the NOTICE file
+    distributed with this work for additional information
+    regarding copyright ownership.  The ASF licenses this file
+    to you under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+    with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+     KIND, either express or implied.  See the License for the
+    specific language governing permissions and limitations
+    under the License.
+-->
+<html>
+    <head>
+        <!--
+        Customize this policy to fit your own app's needs. For more guidance, see:
+            https://github.com/apache/cordova-plugin-whitelist/blob/master/README.md#content-security-policy
+        Some notes:
+            * gap: is required only on iOS (when using UIWebView) and is needed for JS->native communication
+            * https://ssl.gstatic.com is required only on Android and is needed for TalkBack to function properly
+            * Disables use of inline scripts in order to mitigate risk of XSS vulnerabilities. To change this:
+                * Enable inline JS: add 'unsafe-inline' to default-src
+        -->
+        
+        <meta name="format-detection" content="telephone=no">
+        <meta name="msapplication-tap-highlight" content="no">
+        <meta charset="utf-8">
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
+        <link href="https://fonts.googleapis.com/css?family=Baloo+Tamma" rel="stylesheet">
+        <!-- <link rel="stylesheet" type="text/css" href="css/jquery.mobile.custom.structure.min.css"> -->
+        <!-- <link rel="stylesheet" type="text/css" href="css/jquery.mobile.custom.theme.min.css"> -->
+        <link rel="stylesheet" type="text/css" href="css/index.css">
+        <title>HeartVib</title>
+    </head>
+    <body class="bg_black">
+            <div id="app">
+                <div id="header" class="hidden">
+                    <div class="logo"><a href="" class="btn"><img src="img/heart.svg" alt=""></a></div>
+                    <div class="title"><h1>HeartVib</h1></div>
+                    <div id="menuBtn" class="btn"><img src="img/menu.png" alt=""></div>
+                </div>
+                <div id="container">
+                    <div id="login" data-role="page" class="page active bg_black no_header" >
+                        <img src="img/heart.svg" alt="" class="logo">
+                        <h2>HeartVib</h2>
+                        <form id="loginForm" action="index_submit" method="get" accept-charset="utf-8">
+                            
+                            <div class="form-group">
+                                <label for="user_login">Username or email</label>
+                                <input type="text" name="user_login" id="user_login">
+                            </div>
+                            <div class="form-group">
+                                <label for="userPassword">Password</label>
+                                 <input type="password" name="user_password" id="userPassword" value="" placeholder="">
+                            </div>
+                            <button type="submit">Login</button>
+                            
+                        </form>
+                        <a class="vib_link" href="#register" title="">Register</a>
+                    </div>
+                    <div id="register" data-role="page" class="page bg_black no_header" >
+                        <img src="img/heart.svg" alt="" class="logo">
+                        <h2>HeartVib</h2>
+                        <form id="registerForm" action="index_submit" method="get" accept-charset="utf-8">
+                            <div id="registerPart1">
+                                <div id="normalRegister">
+                                    <fieldset>
+                                        <legend>Create an account</legend>
+                                        <div class="form-group">
+                                            <label for="user_email">Email</label>
+                                            <input type="text" name="user_email" id="user_email">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="userPassword">Password</label>
+                                            <input type="password" name="user_password" id="userPassword" value="" placeholder="">
+                                        </div>
+                                    </fieldset>
+                                </div>
+                                <div id="or">OR</div>
+                                <div id="socialRegister">
+                                    <fieldset>
+                                        <legend>Social Registration</legend>
+                                        <input type="hidden" name="id_facebook" id="idFacebook" value="">
+                                        <input type="hidden" name="id_twitter" id="idTwitter" value="">
+                                        <button type="button" class="facebook_connect">Facebook Connect</button>
+                                        <button type="button" class="twitter_connect">Twitter Connect</button>
+                                    </fieldset>
+                                    
+                                </div>
+                                    
+                                <button id="toRegisterPart2" type="button">Next</button>
+                            </div>
+                            <div id="registerPart2">
+                                <fieldset>
+                                    <legend>Choose a username</legend>
+                                    <div class="form-group">
+                                        <label for="user_name">Username</label>
+                                        <input type="text" name="user_name" id="user_name">
+                                    </div>
+                                </fieldset>
+                                
+                                <fieldset>
+                                    <legend>Accept conditions of use</legend>
+                                    <div id="conditionsGenerales">
+                                        <input id="cond" type="checkbox" name="conditions" value="1">
+                                        <label>I accept conditions of <a class="vib_link" href="#conditions" title="">use</a></label>
+                                        
+                                    </div>
+                                </fieldset>
+                                
+                                <button id="toRegisterPart1" type="button">Back</button>
+                                <button type="submit">Register</button>
+                            </div>
+                            
+                            
+                        </form>
+                         <a class="vib_link" href="#login" title="">Login</a>
+                    </div>
+                    <div id="main" data-role="page" class="page bg_black" >
+                        <div id="vibrateContainer">
+                            <ul>
+
+                            </ul>
+                        </div>
+                        <div id="friendToSend">
+                            <div class="close_friendtosend">x</div>
+                            <form action="post">
+                                <ul>
+                                   
+                                </ul>
+                                <input type="submit" name="submit" value="Envoyer" id="">
+                            </form>
+                        </div>
+                    </div>
+                    <div id="friends" data-role="page" class="page bg_black">
+                        <h2 class="item-category">Mes amis</h2>
+                        <ul id="friendsList">
+                            
+                        </ul>
+                        <a class="vib_link" href="#addFriend" title="">Ajouter</a>
+                    </div>
+                    <div id="addFriend" data-role="page" class="page bg_black">
+                        
+                    </div>
+                    <div id="infos" data-role="page" class="page bg_black">
+                        
+                    </div>
+                </div>
+            </div>
+            <div id="menu">
+                <ul class="nav">
+                    <li class="item"><a href="#main" ><img src="img/heart.svg" alt=""></a></li>
+                    <li class="item"><a href="#friends" title="" >Friends</a></li>
+                    <li class="item"><a href="#infos" title="" >My infos</a></li>
+                </ul>
+                <button type="button" id="logout">Logout</a>
+            </div>
+        <!-- <script type="text/javascript" src="js/jquery-3.1.0.min.js"></script> -->
+        <script type="text/javascript" src="js/jquery-2.2.4.js"></script>
+        <!-- <script type="text/javascript" src="js/jquery-migrate-1.4.1.js"></script> -->
+
+        <script type="text/javascript" src="cordova.js"></script>
+        <script type="text/javascript" src="js/jquery.mobile.custom.min.js"></script>
+        <script type="text/javascript" src="js/index.js"></script>
+
+    </body>
+</html>

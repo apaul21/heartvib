@@ -1,0 +1,517 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+* {
+    -webkit-tap-highlight-color: rgba(0,0,0,0); /* make transparent link selection, adjust last value opacity 0 to 1.0 */
+    box-sizing: border-box;
+    font-family: 'Baloo Tamma', cursive, Helvetica;
+}
+body{
+    padding: 0;
+    margin: 0;
+    
+}
+
+img{
+max-width: 100%;
+}
+
+#app{
+    width: 100vw;
+    margin: auto;
+    position: absolute;
+    top: 0;
+    left: 0;
+
+}
+
+.bg_black{
+    background-color: rgb(34,34,34);
+}
+.bg_red{
+   background-color: rgb(255,0,0); 
+}
+
+.page {
+    /*display: none;*/
+    width: 100%;
+    /*height: calc(100vh - 70px);*/
+    height: 0;
+    min-height: 0 !important;
+    overflow: auto;
+    position: absolute;
+    top: 70px;
+    opacity: 0;
+}
+
+.active{
+    display: block;
+}
+
+div#header {
+    background-color: rgb(44,44,44);
+    height: 70px;
+    display: flex;
+    width: 100%;
+    box-shadow: 0px 0px 8px black;
+}
+
+.hidden{
+    display: none !important;
+}
+
+.no_header{
+    top:0;
+}
+
+#header .logo {
+    width: 20%;
+    line-height: 70px;
+    color: white;
+    text-align: center;
+    height: 70px;
+}
+#header .logo a.btn {
+    display: block;
+    height: 100%;
+    width: 100%;
+    padding: 10px;
+}
+#header .logo a.btn img {
+    height: 100%;
+}
+#header .title{
+    width: 60%;
+    line-height: 70px;
+    color: white;
+    text-align: center;    
+}
+#header .title h1{
+    margin: 0;
+    font-weight: normal; 
+    font-family: 'Baloo Tamma', cursive;  
+        font-size: 40px;
+    line-height: 80px; 
+}
+#menuBtn{
+    width: 20%;
+    line-height: 70px;
+    color: white;
+    text-align: center;   
+}
+#menuBtn img {
+    width: 50px;
+    margin-top: 10px;
+}
+div#menu {
+    width: 0;
+    height: 100vh;
+    background-color: rgb(24,24,24);
+    top: 0;
+    left: 100vw;
+    position: absolute;
+    overflow: hidden;
+}
+
+
+
+#menu ul.nav {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+#menu ul.nav li.item {
+    width: 100%;
+    padding: 10%;
+    height: 100px;
+    line-height: 100px;
+    border-bottom: 1px solid rgb(44,44,44);
+}
+#menu ul.nav li.item a {
+    display: block;
+    width: 100%;
+    height: 100%;
+    text-decoration: none;
+    color: #FFF;
+    line-height: 59px;
+    text-align: center;
+}
+#menu .item.active{
+    background: rgba(255,255,255,0.06);
+    box-shadow: inset 0px 0px 8px rgba(255,255,255,0.1);
+}
+#menu ul.nav li.item a img {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+
+
+
+
+
+/*Login */
+div#login{
+    height: 100vh ;
+    top: 0 ;
+}
+
+#login img.logo,#register img.logo {
+    width: 100px;
+    height: 100px;
+    display: block;
+    margin: 4vh auto;
+}
+#login > h2,#register > h2 {
+    margin: 0 10px 1vh;
+    text-align: center;
+    color: #FFF;
+    font-family: 'Baloo Tamma', cursive;
+    font-size: 40px;
+    line-height: 43px;
+}
+
+#login>form,#register>form {
+    margin: 8vh auto 1vh;
+    color: white;
+    overflow: hidden;
+    width: 100%;
+    max-width: 320px;
+}
+form .form-group{
+    height: 60px;
+    position: relative;
+    margin: 1vh 0;
+    float: left;
+    width: 100%;
+}
+form .form-group label{
+    position: absolute;
+    width: calc(100% - 40px);
+    height: 20px;
+    top: 20px;
+    left: 20px;
+}
+
+form .form-group input{
+    position: absolute;
+    background: transparent;
+    height: 40px;
+    top: 10px;
+    width: 100%;
+    border: 2px solid rgb(150,150,150);
+    padding: 10px 20px;
+    color: white;
+    font-size: 16px;
+}
+
+form .form-group input:focus,form .form-group input:active{
+     border: 2px solid rgb(199,50,149);
+}
+
+form button {
+    background: rgb(199,50,149);
+    width: 100%;
+    border: 0;
+    color: white;
+    font-size: 20px;
+    line-height: 6vh;
+    margin-top: 5vh;
+}
+
+
+
+
+/*Register*/
+
+#register img.logo {
+    width: 50px;
+    height: 50px;
+    margin: 10px 20px;
+    position: absolute;
+    top: 0;
+}
+#register > h2 {
+    margin-left: 25%;
+    width: 50%;
+    margin-top: 20px;
+}
+form#registerForm {
+    height: 74vh;
+    overflow: hidden;
+    margin: 5vh auto 1vh;
+    position: relative;
+}
+div#registerPart1,div#registerPart2 {
+    height: 74vh;
+    overflow: hidden;
+}
+div#or {
+    text-align: center;
+    line-height: 6vh;
+    font-size: 25px;
+}
+#registerForm fieldset {
+    padding-bottom: 5px;
+}
+
+#register a.vib_link {
+    margin: 2vh calc(50% - 160px);
+}
+button.facebook_connect {
+    margin-top: 2vh;
+    background-color: rgb(59,89,152);
+}
+button.twitter_connect {
+    background-color: rgb(29,161,242);
+    margin-bottom: 2vh;
+    margin-top: 2vh;
+}
+
+div#registerPart2 {
+    padding-top: 5vh;
+}
+
+#conditionsGenerales a.vib_link {
+    margin: 0;
+    background: transparent;
+    text-decoration: underline;
+    line-height: normal;
+    width: auto;
+    display: inline-block;
+    position: relative;
+    font-size: 16px;
+}
+
+
+div#conditionsGenerales {
+    overflow: hidden;
+}
+div#conditionsGenerales label {
+    line-height: 30px;
+    float: left;
+    margin: 10px 4vw;
+}
+input#cond:checked {
+    background: rgb(199,50,149);
+}
+input#cond {
+    -webkit-appearance: none;
+    width: 30px;
+    background: white;
+    height: 30px;
+    float: left;
+    margin: 10px 0;
+    border: 1px solid rgb(150,150,150);
+}
+
+
+
+
+
+
+ a.vib_link {
+    display: block;
+    width: 100%;
+    background: rgb(150,150,150);
+    text-decoration: none;
+    text-align: center;
+    color: white;
+    line-height: 6vh;
+    margin: 4vh calc(50% - 160px);
+    font-size: 20px;
+    position: absolute;
+    max-width: 320px;
+}
+
+
+
+
+div#vibrateContainer {
+    position: absolute;
+    top: 30%;
+    width: 150px;
+    height: 150px;
+    left: calc(50% - 75px);
+        overflow: hidden;
+}
+
+
+div#vibrateContainer ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    position: relative;
+    width: 150px;
+    height: 150px;
+}
+
+
+div#vibrateContainer ul li {
+    width: 150px;
+    height: 150px;
+    position: absolute;
+    left: 150px;
+}
+
+div#vibrateContainer ul li.selected{
+    left: 0;
+}
+li.vib_btn {
+    border: 7px solid;
+    border-radius: 50%;
+    background-repeat: no-repeat;
+    background-position: 50% 70%;
+    background-size: 80% 80%;
+    border-color: rgb(150,150,150);
+}
+
+
+.heart{
+    background-image: url('../img/heart.svg');
+    
+}
+.heart:hover{
+    background-image: url('../img/heart_hover.svg');
+    
+}
+
+
+
+
+div#friendToSend {
+    position: absolute;
+    background: #000;
+    color: white;
+    top: 100vh;
+    width: 100%;
+    left: 0;
+    overflow: auto;
+    display: none;
+    height: calc(62vh - 70px);
+}
+#friendToSend ul {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    height: 44vh;
+    overflow: auto;
+    padding-bottom: 20px;
+}
+#friendToSend li.item {
+    position: relative;
+}
+#friendToSend ul li.item label {
+    width: 100%;
+    display: block;
+    line-height: 8vh;
+    text-align: center;
+}
+#friendToSend ul li.item input {
+    /*opacity: 0;*/
+    /*width: 20px;*/
+    width: 0px;
+    height: 20px;
+    position: absolute;
+    right: 20px;
+    top: 10px;
+}
+#friendToSend input[type="submit"] {
+    width: 100%;
+    color: white;
+    line-height: 6vh;
+    background: rgb(199,50,149);
+    border: 0;
+    font-size: 20px;
+    position: absolute;
+    bottom: 0;
+}
+#friendToSend .item.active{
+    background: rgba(255,255,255,0.06);
+    box-shadow: inset 0px 0px 8px rgba(255,255,255,0.1);
+}
+
+
+
+
+#friendToSend .label_checked {
+    background: rgb(199,50,149);
+}
+
+.item-category {
+    border-bottom: 1px solid rgb(199,50,149);
+    border-top: 1px solid rgb(199,50,149);
+    text-align: center;
+    padding: 5px;
+    background: rgb(34,34,34);
+    color: #FFF;
+    margin: 0;
+}
+
+ul#friendsList {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    height: 62vh;
+    overflow: auto;
+    padding-bottom: 20px;
+}
+#friendsList .item {
+    width: 100%;
+    display: block;
+    line-height: 8vh;
+    text-align: center;
+    color: #FFF;
+    padding: 0 6vh;
+    position: relative;
+}
+#friendsList .item .delete_btn {
+    position: absolute;
+    line-height: 4.4vh;
+    background: red;
+    width: 4vh;
+    top: 2vh;
+    right: 1vh;
+    height: 4vh;
+    border-radius: 50%;
+    font-size: 3.5vh;
+}
+
+.close_friendtosend {
+    text-align: center;
+    line-height: 6vh;
+    position: absolute;
+    right: 0px;
+    font-size: 30px;
+    width: 6vh;
+    z-index: 1000;
+}
+
+
+
+button#logout {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    color: white;
+    line-height: 6vh;
+    background: rgb(199,50,149);
+    border: 0;
+    font-size: 20px;
+}
