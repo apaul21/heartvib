@@ -23,27 +23,21 @@ var app = {
     },
     // Application Constructor
     initialize: function() {
-        document.addEventListener('deviceready', function () {
-            $('.page.active').css({
-                height:'calc(100vh - 70px)',
+         document.addEventListener('deviceready', function () {
+            $('.page.active.no_header').css({
+                height:'100vh',
                 opacity: 1
             });
-            this.bindEvents();
+            app.bindEvents();
 
             if(app.verifyToken()){
                 app.loadFriends();
                 app.loadVibs();
                 app.loadPage('#main');
+                 app.getMessages();
             }
-            
-            // else{
-            //     params = {
-            //         'hasHeader': false,
-            //     };
-            //     app.loadPage('#login',params);
-            // }
-            
-            
+            cordova.plugins.notification.local.clearAll();
+           
             // function statusChangeCallback(response) {
             //     console.log('statusChangeCallback');
             //     console.log(response);
@@ -95,9 +89,7 @@ var app = {
             //   };
 
 
-        });
-        
-
+         });
 
     },
     // Bind Event Listeners
@@ -105,18 +97,37 @@ var app = {
     // Bind any events that are required on startup. Common events are:
     // 'load', 'deviceready', 'offline', and 'online'.
     bindEvents: function() {
+        app.bindLoginEvents();
+        app.bindRegisterEvents();
+        app.bindMenuEvents();
+        app.bindMessageEvents();
+        app.bindVibListEvents();
+        app.bindPauseEvents();
+        app.bindResumeEvents();
        
-       $(document).on('resume',function(){
-            if(app.verifyToken()){
-                app.loadFriends();
-                app.loadVibs();
-                app.loadPage('#main');
+       
+        // localStorage.messagesInterval = setInterval(function(){
+        //     app.getMessages();
+        // },5000);
+        
 
+        $('.vib_link').on('tap',function(e){
+            e.preventDefault();
+            e.stopPropagation();
+            var target =  $(this).attr('href');
+            $('#menu .item a').parent().removeClass('active');
+            $('#menu .item a[href="'+target+'"]').parent().addClass('active');
+            if( $(target).hasClass('no_header')){
+                 app.loadPage(target,{'hasHeader':false});
             }
             else{
-                 app.loadPage('#login');
+                app.loadPage(target);
             }
-       });
+            
+        });
+    },
+    bindLoginEvents:function(){
+
         // Login events
         $('.form-group').on('tap',function(){
             var $this = $(this);
@@ -204,6 +215,19 @@ var app = {
 
 
 
+        // Logout events
+        // 
+        
+        $('#logout').on('tap',function(e){
+            e.preventDefault();
+            e.stopPropagation();
+            localStorage.clear();
+            $('#menuBtn').tap();
+            $('#friendToSend form ul').empty();
+            app.loadPage('#login');
+        })
+    },
+    bindRegisterEvents:function(){
         // register events
         $('#register form').on('submit',function(e){
             e.preventDefault();
@@ -251,10 +275,8 @@ var app = {
             },300);
             
         });
-        
-
-
-
+    },
+    bindMenuEvents:function(){
         // menu events
         $(document).on('tap','#menuBtn',function(){
             if($(this).hasClass('opened')){
@@ -298,8 +320,8 @@ var app = {
                 }
             }
         });
-
-
+    },
+    bindMessageEvents:function(){
         // message events
         // $.event.special.tap.tapholdThreshold = 400;
 
@@ -457,61 +479,84 @@ var app = {
             })
 
         });
+    },
+    bindVibListEvents:function(){
+        $(document).on('tap','#vibsList .modal_close',function(){
+            var modal  =   $(this).closest('li.modal');
+            var id = modal.attr('data-id');
+            $('#vibsList').animate({
+                top:'100vh',
+                height:'0'
+            },500,function(){
+                modal.remove();
+                var receivedMessages = JSON.parse(localStorage.receivedMessages);
+                receivedMessages = receivedMessages.filter(function(el) {
+                    return el.id !== parseInt(id);
+                });
+                localStorage.receivedMessages = JSON.stringify(receivedMessages);
+            });
+        });
 
-        $('.vib_link').on('tap',function(e){
-            e.preventDefault();
-            e.stopPropagation();
-            var target =  $(this).attr('href');
-            $('#menu .item a').parent().removeClass('active');
-            $('#menu .item a[href="'+target+'"]').parent().addClass('active');
-            if( $(target).hasClass('no_header')){
-                 app.loadPage(target,{'hasHeader':false});
-            }
-            else{
-                app.loadPage(target);
+        $(document).on('tap','#vibsList .modal_footer .next',function(){
+            var modal  =   $(this).closest('li.modal');
+            var id = modal.attr('data-id');
+            if(modal.is(':last-child')){
+                modal.find('.modal_close').tap();
+            }else{
+                modal.animate({
+                    width:'0'
+                },500,function(){
+                    modal.remove();
+                    var receivedMessages = JSON.parse(localStorage.receivedMessages);
+                    receivedMessages = receivedMessages.filter(function(el) {
+                        return el.id !== parseInt(id);
+                    });
+                    localStorage.receivedMessages = JSON.stringify(receivedMessages);
+                });  
             }
             
         });
-
-
-
-
-        // Logout events
-        // 
-        
-        $('#logout').on('tap',function(e){
-            e.preventDefault();
-            e.stopPropagation();
-            localStorage.clear();
-            $('#menuBtn').tap();
-            $('#friendToSend form ul').empty();
-            app.loadPage('#login');
-        })
-
-
-
-        // Notification Events
-        // 
-        app.getMessages();
-        // localStorage.messagesInterval = setInterval(function(){
-        //     app.getMessages();
-        // },5000);
-        document.addEventListener("pause", app.onPause, false);
-        document.addEventListener("resume", app.onResume, false);
-
-        cordova.plugins.backgroundMode.enable();
-
-        // Called when background mode has been activated
-        cordova.plugins.backgroundMode.onactivate = function () {
-            setTimeout(function () {
-                // Modify the currently displayed notification
-                cordova.plugins.backgroundMode.configure({
-                    text:'Running in background for more than 5s now.'
-                });
-            }, 5000);
-        }
-
+        $(document).on('swipeleft','#vibsList .modal',function(){
+            $(this).find('.next').tap();
+        });
     },
+    bindPauseEvents:function(){
+        $(document).on('pause',function(){
+            clearInterval(localStorage.messagesInterval);
+            localStorage.messagesInterval = setInterval(function(){
+                app.getMessages();
+            },10000);
+
+            // hack
+             setTimeout(function(){
+                     app.displayNotification(JSON.parse(localStorage.receivedMessages))
+                },3000)
+        });
+    },
+    bindResumeEvents:function(){
+
+        $(document).on('resume',function(){
+            if(app.verifyToken()){
+                app.loadFriends();
+                app.loadVibs();
+                app.loadPage('#main');
+                clearInterval(localStorage.messagesInterval);
+                localStorage.messagesInterval = setInterval(function(){
+                    app.getMessages();
+                },5000);
+
+            }
+            else{
+                 app.loadPage('#login');
+            }
+
+
+       }); 
+    },
+    // verifyToken()
+    // 
+    // check if user already has a token and if its correct token
+    // return boolean
     verifyToken:function(){
         if(localStorage.token && localStorage.token != ""){
             
@@ -548,9 +593,12 @@ var app = {
         }
         else{
              return false;
-        }
-       
+        }  
     },
+    // loadPage(string pageId, object params)
+    //  
+    // make change of a page with optionnal params
+    // 
     loadPage: function(pageID,params = false){
 
         if(!params){
@@ -586,10 +634,12 @@ var app = {
                 $('#menu .item a[href="'+pageID+'"]').parent().addClass('active');
 
             });
-        }); 
-
-        
+        });
     },
+    // loadVibs()
+    // 
+    // get available vibs types from server and display them
+    // 
     loadVibs:function(){
         $('#vibrateContainer ul').empty();
         var formdata = new FormData();
@@ -648,8 +698,11 @@ var app = {
             
         });
         $('#vibrateContainer ul').append(html);
-
     },
+    // loadFriends()
+    // 
+    // get all friends
+    // 
     loadFriends:function(){
        
             var formdata = new FormData();
@@ -713,6 +766,10 @@ var app = {
             app.displayHomeFriends();
             app.displayMenuFriends();
     },
+    // displayHomeFriends()
+    // 
+    // display friends on the "home" page list of available friends
+    // 
     displayHomeFriends:function(){
         $('#friendToSend form ul').empty();
         var homeFriends = JSON.parse(localStorage.friends);
@@ -720,20 +777,24 @@ var app = {
         var friendsNumber = homeFriends.length;
 
         // Display best friends
-        var bestfriends = homeFriends.sort(app.sort_by('numberOfInteractions', true, parseInt));
+        var bestfriends = homeFriends.sort(sort_by('numberOfInteractions', true, parseInt));
         $('#friendToSend form ul').append('<li class="item-category">Meilleurs amis</li>');
         for (var i = 0; i < 5; i++) {
             $('#friendToSend form ul').append('<li class="item"><label for="bestfriend'+i+'">'+bestfriends[i]['name']+'</label><input type="checkbox" name="friends[]" value="'+bestfriends[i]['id']+'" id="bestfriend'+i+'"></li>');
         }
 
         // Display all friends
-        homeFriends.sort(app.sort_by('name', false, function(a){return a.toUpperCase()}));
+        homeFriends.sort(sort_by('name', false, function(a){return a.toUpperCase()}));
         $('#friendToSend form ul').append('<li class="item-category">Mes amis</li>');
          for (var i = 0; i < friendsNumber; i++) {
             $('#friendToSend form ul').append('<li class="item"><label for="homeFriends'+i+'">'+homeFriends[i]['name']+'</label><input type="checkbox" name="friends[]" value="'+homeFriends[i]['id']+'" id="homeFriends'+i+'"></li>');
         }
 
     },
+    // displayHomeFriends()
+    // 
+    // display friends on the "friends" page list of available friends
+    // 
     displayMenuFriends:function(){
         $('#friendsList').empty();
         var homeFriends = JSON.parse(localStorage.friends);
@@ -743,34 +804,17 @@ var app = {
         
 
         // Display all friends
-        homeFriends.sort(app.sort_by('name', false, function(a){return a.toUpperCase()}));
+        homeFriends.sort(sort_by('name', false, function(a){return a.toUpperCase()}));
         
          for (var i = 0; i < friendsNumber; i++) {
             $('#friendsList').append('<li class="item" data-id="'+homeFriends[i]['id']+'">'+homeFriends[i]['name']+'<div class="delete_btn">x</div></li>');
         }
     },
-    sort_by: function(field, reverse, primer){
-        var key = primer ? 
-            function(x) {return primer(x[field])} : 
-            function(x) {return x[field]};
-        reverse = !reverse ? 1 : -1;
-
-        return function (a, b) {
-            return a = key(a), b = key(b), reverse * ((a > b) - (b > a));
-        } 
-    },
-    onPause:function(){
-        clearInterval(localStorage.messagesInterval);
-        localStorage.messagesInterval = setInterval(function(){
-            getMessages();
-        },10000);
-    },
-    onResume:function(){
-        clearInterval(localStorage.messagesInterval);
-        localStorage.messagesInterval = setInterval(function(){
-            getMessages();
-        },5000);
-    },
+    // displayHomeFriends()
+    // 
+    // display friends on the "friends" page list of available friends
+    //
+    
     getMessages:function(){
         console.log('toto');
 
@@ -814,30 +858,39 @@ var app = {
         // ];
         var messages = [
             {
-                "id":"7alwz0blzsh0",
+                "id":123456,
                 "type":"heart",
                 "vibrationPattern":[200,100,200],
                 "img":"img/heart.svg",
                 "from": "Lisa",
                 "dateSent":"2016-09-19 16:00:00"                
-            }
+            },
+            {
+                "id":123457,
+                "type":"heart",
+                "vibrationPattern":[200,100,200],
+                "img":"img/heart.svg",
+                "from": "Denis",
+                "dateSent":"2016-09-20 17:00:00"                
+            },
+            {
+                "id":123458,
+                "type":"smile",
+                "vibrationPattern":[200,100,200],
+                "img":"img/smile.svg",
+                "from": "David",
+                "dateSent":"2016-09-20 17:00:00"                
+            },
         ];
 
         if(messages.length== 0){
             console.log('Not Any new message')
         }
-        else if(messages.length == 1){
-            console.log('One new message')
-            var message = messages[0];
-            app.doVibrate(messages[0]['vibrationPattern']);
+        else if(messages.length >=0){
+            console.log(messages.length+ "new messages");
+            // app.doVibrate(messages[0]['vibrationPattern']);
+            localStorage.receivedMessages = JSON.stringify(messages);
         }
-
-        
-        
-        app.displayNotification(messages)
-       
-        
-
     },
     doVibrate:function(vibrationPattern){
 
@@ -871,36 +924,114 @@ var app = {
        
     },
     displayNotification:function(messages){
-        if(!localStorage.messagesFormated){
-            localStorage.messagesFormated = {};
+        if(!localStorage.messagesFormated || localStorage.messagesFormated==''){
+            localStorage.messagesFormated = '[]';
         }
         // localStorage.messagesFormated = [];
         var messagesFormated = JSON.parse(localStorage.messagesFormated);
+        console.log(messagesFormated);
+        var startLength = messagesFormated.length;
+
+        var endLength = startLength;
+
+        var messLength = messages.length;
+
         $.each(messages, function(index, val) {
-            console.log(index);
-            messagesFormated[val['id']] = {
-                id: val['id'],
-                title:'HeartVib',
-                text:'You received a '+val['type']+' from '+val['from'],
-                badge:index+1,
-                icon: val['img']
-            }
+           
+            cordova.plugins.notification.local.isPresent(val['id'],function (present) {
+                if(!present){
+                    messagesFormated.push({
+                        id: val['id'],
+                        title:'HeartVib',
+                        text:'You received a '+val['type']+' from '+val['from'],
+                        badge:index+1,
+                        icon: 'file://'+val['img']
+                    })
+                    endLength = endLength +1 
+                }
+                else{
+                    console.log('Notification '+val['id']+' is already present')
+                }
+                if(index == messLength - 1){
+                    localStorage.messagesFormated = JSON.stringify(messagesFormated);
+                    if(startLength< endLength){
+                        displayNotif();
+                    }
+                }
+            });
+            
+            
         });
+        function displayNotif(){
+        
 
-        localStorage.messagesFormated = JSON.stringify(messagesFormated);
+            
+            var messagesList = JSON.parse(localStorage.messagesFormated);
+            
+           
+                cordova.plugins.notification.local.schedule(messagesList);
 
-        // cordova.plugins.notification.local.on("click", function(notification) {
-        //     cordova.plugins.notification.local.clear(notification.id, function() {
-        //         alert("done");
-        //     });
-        // });
-        // cordova.plugins.notification.local.update(JSON.parse(localStorage.messagesFormated));
+                cordova.plugins.notification.local.on("click", function(notification) {
+                    cordova.plugins.notification.local.clearAll();
+
+                    $('#vibsList').animate({
+                        top:'0',
+                        height:'100vh',
+                    },400)
+
+                    $('#vibsList ul').empty();
+
+
+                    var receivedMessages = JSON.parse(localStorage.receivedMessages);
+                    var vibsListMessages = [];
+                    $.each(receivedMessages,function(index,val){
+                        if(val['id'] == notification.id){
+                            vibsListMessages.push(val);
+                        }
+                    });
+                    $.each(receivedMessages,function(index,val){
+                        if(val['id'] != notification.id){
+                            vibsListMessages.push(val);
+                        }
+                    })
+                    var html='';
+                    $.each(vibsListMessages, function(index, message) {
+                        if(index == vibsListMessages.length -1){
+                            html+= '<li class="modal" data-id="'+message['id']+'"><div class="modal_header"><div class="from">'+message['from']+'</div><div class="posted">'+message['dateSent']+'</div></div><div class="modal_body"><img src="'+message['img']+'" alt=""></div><div class="modal_footer"><div class="modal_close">x</div></div></li>';
+
+                        }
+                        else{
+                            html+= '<li class="modal" data-id="'+message['id']+'"><div class="modal_header"><div class="from">'+message['from']+'</div><div class="posted">'+message['dateSent']+'</div></div><div class="modal_body"><img src="'+message['img']+'" alt=""></div><div class="modal_footer"><div class="modal_close">x</div><div class="next">&gt;</div></div></li>';
+                        }
+                    });
+
+                    $('#vibsList ul').append(html);
+                });
+                
+            
+            // else{
+            //     cordova.plugins.notification.local.clearAll(function() {
+            //          console.log('notifications cleared');
+            //     }, this);
+            // }
+        
+        }
+        
     }
 };
 app.initialize();
 
 
+function sort_by(field, reverse, primer){
+        var key = primer ? 
+            function(x) {return primer(x[field])} : 
+            function(x) {return x[field]};
+        reverse = !reverse ? 1 : -1;
 
+        return function (a, b) {
+            return a = key(a), b = key(b), reverse * ((a > b) - (b > a));
+        } 
+    }
 function sleep(milliseconds) {
   var start = new Date().getTime();
   for (var i = 0; i < 1e7; i++) {
